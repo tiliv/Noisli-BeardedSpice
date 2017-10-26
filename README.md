@@ -11,9 +11,9 @@ This section is here because the author wants you to appreciate her "hard work" 
 
 It's awesome, okay?
 
-https://i.imgur.com/iUSXmkX.png
+[[https://i.imgur.com/iUSXmkX.png!alt=Favorite]]
 
-https://i.imgur.com/2jKR6dD.png
+[[https://i.imgur.com/2jKR6dD.png!alt=Category]]
 
 ### Title, Album, Artist
 If you are logged in an playing from one of your favorite presets, or if your using one of the randomized ones Noisli provides, the title will be the preset's name, e.g., ``Writing sounds``, or the built-in ``Productivity`` one.
