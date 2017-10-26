@@ -3,34 +3,89 @@
 //  GNU GPL v3.0
 //
 BSStrategy = {
-    version: 1,
+    version: 2,
     displayName: "Noisli",
     accepts: {
         method: "predicateOnTab",
         format: "%K LIKE[c] '*noisli.com*'",
         args: ["URL"]
     },
-    isPlaying: function () { return $('#sound-button-out').is(':visible'); },
-    toggle: function () {$('.mute-div img:visible').click()},
-    next: function () {},
-    favorite: function () {},
-    previous: function () {},
-    pause: function () {$('#sound-button-out').click()},
-    trackInfo: function () {
-        var trackStrings = [];
-        var activatedSliders = $('.ui-slider:visible');
-        var slidersArray = activatedSliders.toArray();
-        function getStyleLeft(slider){
-            return $(slider).find('span').attr('style').replace(/^.*\b(\d+)%.*$/, '$1');
+    isPlaying: function () {
+        return $('#logged_in,#logged_out').filter(':visible').find('#sound-button,#sound-button-out').is(':visible');
+    },
+    toggle: function () {
+        $('#logged_in,#logged_out').filter(':visible').find('.mute-header img:visible').click()
+    },
+    next: function () {
+        var selectedFavorite = $('.combo-active').closest('.combo-list');
+        if (selectedFavorite.length == 1) {
+            var nextFavorite = selectedFavorite.next().find('.combo-active');
+            if (nextFavorite.length == 0) {
+                nextFavorite = selectedFavorite.siblings('.draggable').eq(0).find('.combo-nonactive');
+            }
+            nextFavorite.find('.combo-span').click();
+        } else {
+            var parentNode = $('#logged_in,#logged_out').filter(':visible');
+            var presetButton = parentNode.find('#presets-div,#presets-dashboard-div').find('.presets-span.clicked');
+            presetButton.click();
         }
+    },
+    favorite: function () {
+        
+    },
+    previous: function () {
+        var selectedFavorite = $('.combo-active').closest('.combo-list');
+        if (selectedFavorite.length == 1) {
+            var nextFavorite = selectedFavorite.previous().find('.combo-active');
+            if (nextFavorite.length == 0) {
+                nextFavorite = selectedFavorite.siblings('.draggable').eq(-1).find('.combo-nonactive');
+            }
+            nextFavorite.find('.combo-span').click();
+        } else {
+            var parentNode = $('#logged_in,#logged_out').filter(':visible');
+            var presetButton = parentNode.find('#presets-div,#presets-dashboard-div').find('.presets-span.clicked');
+            presetButton.click();
+        }
+    },
+    pause: function () {
+        $('#logged_in,#logged_out').filter(':visible').find('#sound-button,#sound-button-out').click()
+    },
+    trackInfo: function () {
+        var presetName = $('#menu-dashboard-span-combo:visible').text();
+        if (presetName === "") {
+            presetName = $('.presets-span.clicked').text();
+        }
+
+        function getStyleLeft(slider){
+            var slider = $(slider);
+            if (slider.css('display') != "none") {
+                return slider.find('span').attr('style').replace(/^.*\b(\d+)%.*$/, '$1');
+            }
+            return 0;
+        }
+
+        var parentNode = $('#logged_in,#logged_out').filter(':visible');
+
+        var activatedSliders = parentNode.children('.container').find('.ui-slider[data-element="volume_slider"]');
+        var slidersArray = activatedSliders.toArray();
+
         slidersArray.sort(function(a, b){
             return getStyleLeft(b) - getStyleLeft(a);
         });
+
+        var trackStrings = [];
         $(slidersArray).each(function(){
-            trackStrings.push($(this).siblings('img').attr('title'));
+            var slider = $(this);
+            if (slider.css('display') != "none") {
+                trackStrings.push(slider.siblings('img').attr('title'));
+            }
         });
+        var trackName = trackStrings.join(', ');
+        var albumName = null;
+
         var dominantSlider = $(slidersArray[0]);
         var dominantSoundImg = $(dominantSlider).siblings('img');
+
         var canvas = document.createElement('canvas');
         canvas.width = 250;
         canvas.height = 250;
@@ -38,10 +93,17 @@ BSStrategy = {
         context.fillStyle = $('body').css('background-color');
         context.fillRect(0, 0, 250, 250);
         context.drawImage(dominantSoundImg[0], 25, 25, 200, 200);
+
+        if (presetName !== "") {
+            albumName = trackName;
+            trackName = presetName;
+        }
         return {
             'image': canvas.toDataURL(),
-            'track': (trackStrings.join(', ') || null),
-            'artist': 'Noisli'
+            'track': trackName,
+            'artist': 'Noisli',
+            'album': albumName,
+            'favorited': ($('.combo-active').length == 1)
         }
     }
 }
