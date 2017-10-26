@@ -1,6 +1,6 @@
 # Noisli.bsstrategy
 
-This custom plugin adds media key support through BeardedSpice to the Noisli web app.
+This custom plugin adds media key support through [BeardedSpice](https://beardedspice.github.io) to the [Noisli](https://www.noisli.com) web app.
 
 The plugin supports the logged out anonymous view and the logged in view.
 
